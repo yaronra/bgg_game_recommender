@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Recommender</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css" rel="stylesheet">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1 { color: #2c3e50; text-align: center; }
+        .welcome-text { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .warning { color: red; }
+        .error-message { 
+            background-color: #ffebee; 
+            color: #c62828; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-bottom: 20px; 
+            border: 1px solid #ef9a9a;
+        }
+        form { display: flex; flex-direction: column; gap: 20px; }
+        label { font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        input[type="text"], input[type="submit"] { padding: 10px; }
+        input[type="submit"] { 
+            background-color: #2ecc71; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover { 
+            background-color: #27ae60; 
+        }
+        .slider { height: 20px; margin-top: 10px; }
+        .noUi-connect { background: #3498db; }
+        .noUi-handle { width: 34px; height: 28px; right: -17px; top: -6px; }
+        .noUi-handle:before, .noUi-handle:after { left: 10px; }
+        .noUi-handle:after { left: 17px; }
+    </style>
+</head>
+<body>
+    <h1>Game Recommender</h1>
+    
+    <div class="welcome-text">
+        <p>This tools analyzes the games you have rated highly on BoardGameGeek, and looks for other games with similar features.</p>
+        <p class="warning">Please allow a minute or two for querying BGG and calculating results.</p>
+    </div>
+
+    {% if error %}
+    <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <form action="/" method="post">
+        <div>
+            <label for="username">BGG Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div>
+            <label for="top-ranked-slider">Show results from the top ranked <span id="top-ranked-value"></span> games</label>
+            <div id="top-ranked-slider" class="slider"></div>
+            <input type="hidden" id="from_top_ranked" name="from_top_ranked">
+        </div>
+
+        <div>
+            <label for="player-range">Number of players: <span id="player-range-value"></span></label>
+            <div id="player-range" class="slider"></div>
+            <input type="hidden" id="min_players" name="min_players">
+            <input type="hidden" id="max_players" name="max_players">
+        </div>
+
+        <div>
+            <label for="game-length">Game length: <span id="game-length-value"></span> minutes</label>
+            <div id="game-length" class="slider"></div>
+            <input type="hidden" id="min_length" name="min_length">
+            <input type="hidden" id="max_length" name="max_length">
+        </div>
+
+        <input type="submit" value="Get Recommendations">
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
+    <script>
+        function createSlider(element, start, range, step, connect, updateCallback) {
+            noUiSlider.create(element, {
+                start: start,
+                connect: connect,
+                step: step,
+                range: range
+            });
+
+            element.noUiSlider.on('update', updateCallback);
+        }
+
+        // Top ranked games slider
+        const topRankedSlider = document.getElementById('top-ranked-slider');
+        const topRankedValue = document.getElementById('top-ranked-value');
+        const fromTopRankedInput = document.getElementById('from_top_ranked');
+
+        createSlider(topRankedSlider, [1000], { 'min': 500, 'max': 10000 }, 500, 'lower', function (values, handle) {
+            const value = Math.round(values[handle]);
+            topRankedValue.textContent = value;
+            fromTopRankedInput.value = value;
+        });
+
+        // Player range slider
+        const playerRange = document.getElementById('player-range');
+        const playerRangeValue = document.getElementById('player-range-value');
+        const minPlayersInput = document.getElementById('min_players');
+        const maxPlayersInput = document.getElementById('max_players');
+
+        createSlider(playerRange, [1, 12], { 'min': 1, 'max': 12 }, 1, true, function (values, handle) {
+            const minPlayers = Math.round(values[0]);
+            const maxPlayers = Math.round(values[1]);
+            playerRangeValue.textContent = `${minPlayers} to ${maxPlayers}`;
+            minPlayersInput.value = minPlayers;
+            maxPlayersInput.value = maxPlayers;
+        });
+
+        // Game length slider
+        const gameLengthSlider = document.getElementById('game-length');
+        const gameLengthValue = document.getElementById('game-length-value');
+        const minLengthInput = document.getElementById('min_length');
+        const maxLengthInput = document.getElementById('max_length');
+
+        createSlider(gameLengthSlider, [0, 300], { 'min': 0, 'max': 300 }, 15, true, function (values, handle) {
+            const minLength = Math.round(values[0]);
+            const maxLength = Math.round(values[1]);
+            gameLengthValue.textContent = `${minLength} to ${maxLength}`;
+            minLengthInput.value = minLength;
+            maxLengthInput.value = maxLength;
+        });
+    </script>
+</body>
+</html>

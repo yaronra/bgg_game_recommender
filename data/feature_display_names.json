@@ -1,0 +1,13 @@
+{
+    "minplayers": "Min. player count (listed)",
+    "maxplayers": "Max. player count (listed)",
+    "min_suggested_n_players": "Min. player count (BGG poll)",
+    "max_suggested_n_players": "Max. player count (BGG poll)",
+    "minplaytime": "Min. play time",
+    "maxplaytime": "Max. play time",
+    "minage": "Minimum age",
+    "usersrated": "Number of ratings",
+    "average": "Average rating",
+    "stddev": "Standard deviation of ratings",
+    "averageweight": "Game weight"
+}

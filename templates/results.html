@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Recommendations</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1, h2 { color: #333; }
+        table { 
+            width: 100%; 
+            max-width: 800px;
+            border-collapse: collapse; 
+            margin-bottom: 20px; 
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 8px; 
+            text-align: left; 
+        }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        a { color: #1a0dab; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .flex-container {
+            display: flex;
+            gap: 100px;
+        }
+        .table-container {
+            margin-right: 20px;
+        }    </style>
+</head>
+<body>
+    <h1>Feature Analysis and Game Recommendations</h1>
+
+    <p>Results based on {{ n_high_ratings }} games that you have rated {{ threshold }} or higher.</p>
+    
+    <div class="flex-container">
+        <div class="table-container">
+            <h2>Recommended Games</h2>
+            <ul>
+                <li>From the {{ from_top_ranked }} top ranked BGG games</li>
+                {% if min_players %}
+                <li>At least {{ min_players }} players</li>
+                {% endif %}
+                {% if max_players %}
+                <li>At most {{ max_players }} players</li>
+                {% endif %}
+                {% if min_length %}
+                <li>At least {{ min_length }} minutes</li>
+                {% endif %}
+                {% if max_length %}
+                <li>At most {{ max_length }} minutes</li>
+                {% endif %}
+            </ul>
+            <table>
+                <tr>
+                    <th>Game</th>
+                    <th>Confidence</th>
+                </tr>
+                {% for game_id, game_name, confidence in recommendations %}
+                <tr>
+                    <td><a href="https://boardgamegeek.com/boardgame/{{ game_id }}" target="_blank">{{ game_name }}</a></td>
+                    <td>{{ confidence }}%</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+        <div class="table-container">
+            <h2>Some Features of your Favorite Games</h2>
+            <table border="1">
+                <tr>
+                    <th>Feature</th>
+                    <th>In your Favorite Games</th>
+                    <th>In Other Games</th>
+                </tr>
+                {% for feature, good_percent, bad_percent in good_features %}
+                <tr>
+                    <td>{{ feature|safe }}</td>
+                    <td>{{ good_percent }}%</td>
+                    <td>{{ bad_percent }}%</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <h2>Some Features Absent From Your Favorite Games</h2>
+            <table border="1">
+                <tr>
+                    <th>Feature</th>
+                    <th>In your Favorite Games</th>
+                    <th>In Other Games</th>
+                </tr>
+                {% for feature, good_percent, bad_percent in bad_features %}
+                <tr>
+                    <td>{{ feature|safe }}</td>
+                    <td>{{ good_percent }}%</td>
+                    <td>{{ bad_percent }}%</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    
+</body>
+</html>
